@@ -5,16 +5,15 @@ export const fetchData = async () => {
     const response = await fetch(URL);
     const data = await response.json();
 
-    const todo = data.map((todo) => {
-      return {
-        id: todo.id,
-        title: todo.title,
-        description: todo.description || "",
-        completed: todo.completed ? "Done" : "To Do",
-      };
-    });
+    const mappedTasks = data.slice(0, 20).map((task) => ({
+          id: task.id,
+          title: task.title,
+          description: `Task ${task.id} description`,
+          status: task.completed ? 'Done' : 'To Do'
+        }));
 
-    return todo;
+    console.log(mappedTasks);
+    return mappedTasks;
   } catch (error) {
     console.error("Failed to fetch data", error);
     throw error;
