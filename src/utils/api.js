@@ -12,7 +12,6 @@ export const fetchData = async () => {
           status: task.completed ? 'Done' : 'To Do'
         }));
 
-    console.log(mappedTasks);
     return mappedTasks;
   } catch (error) {
     console.error("Failed to fetch data", error);

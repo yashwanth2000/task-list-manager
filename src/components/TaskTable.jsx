@@ -6,15 +6,14 @@ import toast from "react-hot-toast";
 
 const TaskTable = () => {
   const tableRef = useRef(null);
-  const { tasks,updateTask, deleteTask } = useTaskContext();
+  const { filteredTasks,updateTask, deleteTask } = useTaskContext();
 
   useEffect(() => {
     if (!tableRef.current) return;
 
     const table = new Tabulator(tableRef.current, {
-      data: tasks,
-      layout: "fitColumns",
-      responsiveLayout: "collapse",
+      data: filteredTasks,
+      layout:"fitDataTable",
       columns: [
         { title: "ID", field: "id", width: 80 },
         {
@@ -66,7 +65,7 @@ const TaskTable = () => {
     return () => {
       table.destroy();
     };
-  }, [tasks, updateTask, deleteTask]);
+  }, [filteredTasks, updateTask, deleteTask]);
 
   return <div ref={tableRef} className="mt-4" />;
 };

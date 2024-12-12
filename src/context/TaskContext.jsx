@@ -42,14 +42,13 @@ export const TaskProvider = ({ children }) => {
     const matchesSearch =
       task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (task.description &&
-        task.description
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase()));
+        task.description.toLowerCase().includes(searchQuery.toLowerCase()));
     return matchesStatus && matchesSearch;
   });
 
   const contextValue = {
-    tasks: filteredTasks,
+    tasks,
+    filteredTasks,
     setTasks,
     addTask,
     updateTask,

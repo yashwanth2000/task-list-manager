@@ -4,7 +4,9 @@ import { TaskProvider, useTaskContext } from "./context/TaskContext";
 import TaskTable from "./components/TaskTable";
 import TaskStats from "./components/TaskStats";
 import { fetchData } from "./utils/api";
-import { Kanban, Plus } from "lucide-react";
+import { Kanban } from "lucide-react";
+import TaskFilters from "./components/TaskFilters";
+import AddTaskForm from "./components/AddTaskForm";
 
 function TaskManager() {
   const { setTasks } = useTaskContext();
@@ -32,28 +34,13 @@ function TaskManager() {
               Task Management System
             </h1>
           </div>
-
-          <div className="flex items-center space-x-4">
-            <button
-              className="
-                flex items-center space-x-2 
-                bg-blue-600 text-white 
-                px-4 py-2 rounded-lg 
-                hover:bg-blue-700 
-                transition duration-300 
-                shadow-md hover:shadow-lg
-                group
-              "
-            >
-              <Plus className="group-hover:rotate-90 transition duration-300 w-5 h-5" />
-              <span className="hidden sm:inline">Add Task</span>
-            </button>
-          </div>
         </div>
       </header>
 
       <main className="container mx-auto px-4 py-6">
         <TaskStats />
+        <TaskFilters />
+        <AddTaskForm />
         <TaskTable />
       </main>
 

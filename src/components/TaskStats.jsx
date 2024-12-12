@@ -2,7 +2,7 @@ import CountUp from "react-countup";
 import { useTaskContext } from "../context/TaskContext";
 
 const TaskStats = () => {
-  const { tasks, filterStatus } = useTaskContext();
+  const { tasks } = useTaskContext();
 
   const statsData = [
     {
@@ -60,11 +60,7 @@ const TaskStats = () => {
           <h3
             className={`
               text-sm font-medium mb-2
-              ${
-                filterStatus === stat.label
-                  ? "text-white group-hover:text-opacity-100"
-                  : "group-hover:text-opacity-80 text-gray-500"
-              }
+              group-hover:text-opacity-80 text-gray-500
               transition-all duration-300
             `}
           >
@@ -80,7 +76,6 @@ const TaskStats = () => {
               text-2xl md:text-3xl font-semibold 
               group-hover:scale-110 
               transition-transform duration-300
-              ${filterStatus === stat.label ? "text-white" : ""}
             `}
           />
         </div>
