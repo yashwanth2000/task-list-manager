@@ -7,6 +7,7 @@ import { fetchData } from "./utils/api";
 import { Kanban } from "lucide-react";
 import TaskFilters from "./components/TaskFilters";
 import AddTaskForm from "./components/AddTaskForm";
+import toast from "react-hot-toast";
 
 function TaskManager() {
   const { setTasks } = useTaskContext();
@@ -18,6 +19,7 @@ function TaskManager() {
         setTasks(mappedTasks);
       } catch (error) {
         console.error("Error loading tasks:", error);
+        toast.error("Failed to load tasks");
       }
     };
 
@@ -25,24 +27,26 @@ function TaskManager() {
   }, [setTasks]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200">
-      <header className="bg-white shadow-lg border-b border-gray-200">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <Kanban className="w-8 h-8 text-blue-600" />
-            <h1 className="text-xl md:text-2xl font-bold text-gray-800 tracking-tight">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 px-4 py-8">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <header className="mb-8 flex items-center justify-between animate-fade-in-down">
+          <div className="flex items-center space-x-4 cursor-pointer hover:scale-105 transition-transform duration-300 ease-in-out">
+            <Kanban className="w-10 h-10 text-gray-700 hover:text-blue-500 transition-colors duration-300" />
+            <h1 className="text-3xl font-bold text-gray-800 tracking-tight hover:text-blue-600 transition-colors duration-300">
               Task Management System
             </h1>
           </div>
-        </div>
-      </header>
+        </header>
 
-      <main className="container mx-auto px-4 py-6">
-        <TaskStats />
-        <TaskFilters />
-        <AddTaskForm />
-        <TaskTable />
-      </main>
+        {/* Main Content */}
+        <main className="animate-fade-in-up">
+          <TaskStats />
+          <TaskFilters />
+          <AddTaskForm />
+          <TaskTable />
+        </main>
+      </div>
 
       <Toaster position="top-right" />
     </div>

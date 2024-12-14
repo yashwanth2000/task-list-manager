@@ -1,35 +1,49 @@
-import { Search } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Search, Filter } from "lucide-react";
 import { useTaskContext } from "../context/TaskContext";
+import { useDebounce } from "../utils/useDebounce";
 
 const TaskFilters = () => {
-  const { filterStatus, setFilterStatus, searchQuery, setSearchQuery } =
-    useTaskContext();
+  const [localSearch, setLocalSearch] = useState("");
+  const { setSearchQuery, filterStatus, setFilterStatus } = useTaskContext();
+  const debouncedSearch = useDebounce(localSearch, 500);
+
+  useEffect(() => {
+    setSearchQuery(debouncedSearch);
+  }, [debouncedSearch, setSearchQuery]);
 
   return (
-    <div className="flex gap-4 mb-6">
-      <div className="relative flex-1">
+    <div className="flex flex-col md:flex-row gap-4 mb-8 bg-white p-6 rounded-xl shadow-md transition-opacity duration-500">
+      {/* Search Input */}
+      <div className="relative flex-grow">
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
           <Search className="h-5 w-5 text-gray-400" />
         </div>
         <input
           type="text"
           placeholder="Search tasks..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          value={localSearch}
+          onChange={(e) => setLocalSearch(e.target.value)}
+          className="w-full pl-10 pr-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-gray-200 focus:border-gray-300 transition duration-300"
         />
       </div>
 
-      <select
-        value={filterStatus}
-        onChange={(e) => setFilterStatus(e.target.value)}
-        className="block w-48 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
-      >
-        <option value="All">All Status</option>
-        <option value="To Do">To Do</option>
-        <option value="In Progress">In Progress</option>
-        <option value="Done">Done</option>
-      </select>
+      {/* Status Filter */}
+      <div className="relative">
+        <select
+          value={filterStatus}
+          onChange={(e) => setFilterStatus(e.target.value)}
+          className="w-full md:w-48 px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-gray-200 focus:border-gray-300 appearance-none cursor-pointer"
+        >
+          <option value="All">All Status</option>
+          <option value="To Do">To Do</option>
+          <option value="In Progress">In Progress</option>
+          <option value="Done">Done</option>
+        </select>
+        <div className="absolute inset-y-0 right-0 flex items-center px-2 text-gray-600 transition-transform duration-300">
+          <Filter className="h-5 w-5" />
+        </div>
+      </div>
     </div>
   );
 };

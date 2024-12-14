@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useMemo } from "react";
 import PropTypes from "prop-types";
 
 const TaskContext = createContext();
@@ -36,15 +36,17 @@ export const TaskProvider = ({ children }) => {
     setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
   };
 
-  const filteredTasks = tasks.filter((task) => {
-    const matchesStatus =
-      filterStatus === "All" || task.status === filterStatus;
-    const matchesSearch =
-      task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (task.description &&
-        task.description.toLowerCase().includes(searchQuery.toLowerCase()));
-    return matchesStatus && matchesSearch;
-  });
+  const filteredTasks = useMemo(() => {
+    return tasks.filter((task) => {
+      const matchesStatus =
+        filterStatus === "All" || task.status === filterStatus;
+      const matchesSearch =
+        task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (task.description &&
+          task.description.toLowerCase().includes(searchQuery.toLowerCase()));
+      return matchesStatus && matchesSearch;
+    });
+  }, [tasks, filterStatus, searchQuery]); // Only re-run when tasks, filterStatus, or searchQuery change
 
   const contextValue = {
     tasks,

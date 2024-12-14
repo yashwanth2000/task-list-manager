@@ -4,70 +4,107 @@ import "tabulator-tables/dist/css/tabulator.min.css";
 import { useTaskContext } from "../context/TaskContext";
 import toast from "react-hot-toast";
 
+const STATUS_COLORS = {
+  "To Do": "bg-yellow-100 text-yellow-800",
+  "In Progress": "bg-blue-100 text-blue-800",
+  Done: "bg-green-100 text-green-800",
+};
+
+const STATUS_OPTIONS = ["To Do", "In Progress", "Done"];
+
 const TaskTable = () => {
   const tableRef = useRef(null);
-  const { filteredTasks,updateTask, deleteTask } = useTaskContext();
+  const { filteredTasks, updateTask, deleteTask } = useTaskContext();
 
   useEffect(() => {
     if (!tableRef.current) return;
 
     const table = new Tabulator(tableRef.current, {
       data: filteredTasks,
-      layout:"fitDataTable",
+      layout: "fitColumns",
       columns: [
-        { title: "ID", field: "id", width: 80 },
+        {
+          title: "ID",
+          field: "id",
+          width: 80,
+        },
         {
           title: "Title",
           field: "title",
           editor: "input",
-          validator: ["required", "string"],
-          width: 200,
+          cellEdited: (cell) => {
+            const row = cell.getRow();
+            const task = row.getData();
+            updateTask(task.id, { title: task.title });
+            toast.success("Task updated successfully");
+          },
         },
         {
           title: "Description",
           field: "description",
           editor: "textarea",
-          width: 300,
+          cellEdited: (cell) => {
+            const row = cell.getRow();
+            const task = row.getData();
+            updateTask(task.id, { description: task.description });
+            toast.success("Task updated successfully");
+          },
         },
         {
           title: "Status",
           field: "status",
-          editor: "select",
-          editorParams: {
-            values: ["To Do", "In Progress", "Done"],
+          formatter: (cell) => {
+            const task = cell.getRow().getData();
+            return `
+              <select 
+                class="status-dropdown ${
+                  STATUS_COLORS[task.status]
+                } block w-full px-3 py-2 rounded-md text-sm font-medium cursor-pointer border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              >
+                ${STATUS_OPTIONS.map(
+                  (status) => `
+                    <option value="${status}" ${
+                    status === task.status ? "selected" : ""
+                  }>${status}</option>
+                  `
+                ).join("")}
+              </select>`;
           },
-          width: 120,
+          cellClick: (e, cell) => {
+            if (e.target.classList.contains("status-dropdown")) {
+              const newStatus = e.target.value;
+              const task = cell.getRow().getData();
+              if (newStatus !== task.status) {
+                updateTask(task.id, { status: newStatus });
+                toast.success(`Status changed to ${newStatus}`);
+              }
+            }
+          },
         },
         {
           title: "Actions",
-          formatter: function () {
-            const btn = document.createElement("button");
-            btn.innerHTML = "Delete";
-            btn.className =
-              "bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600";
-            return btn;
+          formatter: () => {
+            return `
+              <button
+                class="text-red-500 bg-transparent border border-transparent rounded-md px-3 py-2 font-medium transition-all hover:bg-red-100 hover:text-red-700 hover:border-red-300 active:bg-red-200 active:text-red-800 focus:outline-none focus:ring-2 focus:ring-red-300"
+              >
+                Delete
+              </button>
+            `;
           },
-          cellClick: function (_e, cell) {
-            const taskId = cell.getRow().getData().id;
-            deleteTask(taskId);
+          cellClick: (e, cell) => {
+            const task = cell.getRow().getData();
+            deleteTask(task.id);
             toast.success("Task deleted successfully");
           },
         },
       ],
-      cellEdited: function (cell) {
-        const row = cell.getRow();
-        const task = row.getData();
-        updateTask(task.id, task);
-        toast.success("Task updated successfully");
-      },
     });
 
-    return () => {
-      table.destroy();
-    };
+    return () => table.destroy();
   }, [filteredTasks, updateTask, deleteTask]);
 
-  return <div ref={tableRef} className="mt-4" />;
+  return <div ref={tableRef} className="bg-white rounded-lg shadow-md p-4" />;
 };
 
 export default TaskTable;

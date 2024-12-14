@@ -1,5 +1,6 @@
 import CountUp from "react-countup";
 import { useTaskContext } from "../context/TaskContext";
+import { ClipboardList, ListTodo, Clock, CheckCircle2 } from "lucide-react";
 
 const TaskStats = () => {
   const { tasks } = useTaskContext();
@@ -8,74 +9,63 @@ const TaskStats = () => {
     {
       label: "Total Tasks",
       value: tasks.length,
-      color: "text-gray-900",
-      bgColor: "bg-gray-50",
-      hoverBg: "hover:bg-gray-100",
-      shadowHover: "hover:shadow-2xl",
+      icon: ClipboardList,
+      color: "text-gray-600",
+      bgColor: "bg-gray-100",
     },
     {
       label: "To Do",
       value: tasks.filter((t) => t.status === "To Do").length,
+      icon: ListTodo,
       color: "text-yellow-600",
-      bgColor: "bg-yellow-50",
-      hoverBg: "hover:bg-yellow-100",
-      shadowHover: "hover:shadow-2xl",
+      bgColor: "bg-yellow-100",
     },
     {
       label: "In Progress",
       value: tasks.filter((t) => t.status === "In Progress").length,
+      icon: Clock,
       color: "text-blue-600",
-      bgColor: "bg-blue-50",
-      hoverBg: "hover:bg-blue-100",
-      shadowHover: "hover:shadow-2xl",
+      bgColor: "bg-blue-100",
     },
     {
-      label: "Done",
+      label: "Completed",
       value: tasks.filter((t) => t.status === "Done").length,
+      icon: CheckCircle2,
       color: "text-green-600",
-      bgColor: "bg-green-50",
-      hoverBg: "hover:bg-green-100",
-      shadowHover: "hover:shadow-2xl",
+      bgColor: "bg-green-100",
     },
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+    <div className="flex flex-wrap gap-4 mb-8 cursor-pointer justify-center">
       {statsData.map((stat) => (
         <div
           key={stat.label}
           className={`
-            ${stat.bgColor} ${stat.hoverBg} ${stat.shadowHover}
-            p-4 rounded-lg shadow text-center 
-            h-[120px] flex flex-col justify-center items-center 
-            transition-all duration-300 ease-in-out
-            transform hover:scale-105 
-            cursor-pointer
-            group
-            relative
-            overflow-hidden
-            w-full
+            ${stat.bgColor} rounded-xl p-4 
+            flex flex-col items-center justify-center 
+            shadow-lg hover:shadow-xl
+            transition-all duration-300
+            w-40 md:w-48
+            transform hover:scale-105 hover:bg-opacity-90
           `}
         >
-          <h3
+          <div
             className={`
-              text-sm font-medium mb-2
-              group-hover:text-opacity-80 text-gray-500
-              transition-all duration-300
-            `}
+            ${stat.color} mb-2 
+            bg-white p-3 rounded-full 
+            shadow-md
+          `}
           >
-            {stat.label}
-          </h3>
-
+            <stat.icon className="w-6 h-6" />
+          </div>
+          <h3 className="text-sm text-gray-600 mb-1">{stat.label}</h3>
           <CountUp
-            start={0}
             end={stat.value}
             duration={2}
             className={`
               ${stat.color} 
-              text-2xl md:text-3xl font-semibold 
-              group-hover:scale-110 
-              transition-transform duration-300
+              text-2xl font-bold
             `}
           />
         </div>

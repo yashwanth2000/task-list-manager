@@ -8,24 +8,59 @@ const AddTaskForm = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("To Do");
+  const [errors, setErrors] = useState({});
 
   const { addTask } = useTaskContext();
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!title.trim()) {
+      newErrors.title = "Title is required";
+    }
+
+    if (title.length > 100) {
+      newErrors.title = "Title must be less than 100 characters";
+    }
+
+    if (description.length > 500) {
+      newErrors.description = "Description must be less than 500 characters";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!title.trim()) {
-      toast.error("Title is required");
-      return;
+    if (validateForm()) {
+      addTask({
+        title: title.trim(),
+        description: description.trim() || "No description provided.",
+        status,
+      });
+
+      toast.success("Task added successfully!", {
+        style: {
+          background: "#333",
+          color: "#fff",
+        },
+      });
+
+      // Reset form
+      setTitle("");
+      setDescription("");
+      setStatus("To Do");
+      setIsOpen(false);
+    } else {
+      toast.error("Please fix form errors", {
+        style: {
+          background: "#ff4444",
+          color: "#fff",
+        },
+      });
     }
-
-    addTask({ title, description, status });
-    toast.success("Task added successfully");
-
-    setTitle("");
-    setDescription("");
-    setStatus("To Do");
-    setIsOpen(false);
   };
 
   return (
@@ -33,56 +68,67 @@ const AddTaskForm = () => {
       {!isOpen ? (
         <button
           onClick={() => setIsOpen(true)}
-          className="flex items-center space-x-2 
-                bg-blue-600 text-white 
-                px-4 py-2 rounded-lg 
-                hover:bg-blue-700 
-                transition duration-300 
-                shadow-md hover:shadow-lg
-                group"
+          className="
+            flex items-center gap-2 
+          bg-gray-800 text-white 
+            px-4 py-2 rounded-lg 
+          hover:bg-gray-700 
+            transition-colors 
+            group"
         >
-          <Plus className="group-hover:rotate-90 transition duration-300 w-5 h-5" />
-          <span className="hidden sm:inline">Add New Task</span>
+          <Plus className="w-5 h-5 transition-transform duration-300 group-hover:rotate-90" />
+          Add New Task
         </button>
       ) : (
         <form
           onSubmit={handleSubmit}
-          className="bg-white p-6 rounded-lg shadow-md"
+          className="
+            bg-white p-6 rounded-lg 
+            shadow-md border border-gray-200
+          "
         >
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Title
-            </label>
+            <label className="block text-gray-700 mb-2">Title</label>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              className={`
+                w-full px-3 py-2 
+                border rounded-lg
+                ${errors.title ? "border-red-500" : "border-gray-300"}
+              `}
               placeholder="Enter task title"
             />
+            {errors.title && (
+              <p className="text-red-500 text-sm mt-1">{errors.title}</p>
+            )}
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Description
-            </label>
+            <label className="block text-gray-700 mb-2">Description</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              className={`
+                w-full px-3 py-2 
+                border rounded-lg
+                ${errors.description ? "border-red-500" : "border-gray-300"}
+              `}
               placeholder="Enter task description"
               rows={3}
             />
+            {errors.description && (
+              <p className="text-red-500 text-sm mt-1">{errors.description}</p>
+            )}
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Status
-            </label>
+            <label className="block text-gray-700 mb-2">Status</label>
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
             >
               <option value="To Do">To Do</option>
               <option value="In Progress">In Progress</option>
@@ -90,17 +136,27 @@ const AddTaskForm = () => {
             </select>
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex justify-between">
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+              className="
+                bg-gray-800 text-white 
+                px-4 py-2 rounded-lg 
+                hover:bg-gray-700 
+                transition-colors
+              "
             >
               Add Task
             </button>
             <button
               type="button"
               onClick={() => setIsOpen(false)}
-              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+              className="
+                text-gray-600 
+                hover:bg-gray-100 
+                px-4 py-2 rounded-lg 
+                transition-colors
+              "
             >
               Cancel
             </button>
